@@ -28,10 +28,15 @@ public class Book extends Section {
         }
         System.out.println();
 
-        // Parcurgem și printăm manual conținutul (fără a folosi super.print()
-        // deoarece super.print() ar afișa doar titlul simplu, nu "Book: Titlu")
         for (Element child : children) {
             child.print();
         }
     }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+        super.accept(visitor); // Va itera prin elementele adăugate în carte
+    }
+
 }

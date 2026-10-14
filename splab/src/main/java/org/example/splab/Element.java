@@ -14,4 +14,6 @@ public interface Element {
     default Element get(int index) {
         throw new UnsupportedOperationException("Operațiune invalidă pentru frunză!");
     }
+    void accept(Visitor visitor);
+
 }
