@@ -42,5 +42,8 @@ public class Section implements Element {
             child.accept(visitor);
         }
     }
+    public String getTitle() {
+        return this.title;
+    }
 
 }
