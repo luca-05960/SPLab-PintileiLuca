@@ -34,4 +34,13 @@ public class Section implements Element {
     public Element get(int index) {
         return children.get(index);
     }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+        for (Element child : children) {
+            child.accept(visitor);
+        }
+    }
+
 }
