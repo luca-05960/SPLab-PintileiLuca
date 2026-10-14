@@ -1,20 +1,26 @@
 package org.example.splab;
 
-public class TableOfContents implements Element {
-    private String something;
+import java.util.ArrayList;
+import java.util.List;
 
-    public TableOfContents(String something) {
-        this.something = something;
+public class TableOfContents implements Element {
+    private List<String> entries = new ArrayList<>();
+
+    // Metodă pentru a adăuga un capitol nou în cuprins
+    public void addEntry(String entry) {
+        entries.add(entry);
     }
 
     @Override
     public void print() {
-        System.out.println("TableOfContents: " + something);
+        System.out.println("Table of Contents");
+        for (String entry : entries) {
+            System.out.println(" - " + entry);
+        }
     }
 
     @Override
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
-
 }
