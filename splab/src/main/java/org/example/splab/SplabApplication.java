@@ -1,33 +1,34 @@
 package org.example.splab;
 
+import org.example.splab.difexample.ClientComponent;
+import org.example.splab.difexample.SingletonComponent;
+import org.example.splab.difexample.TransientComponent;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
 public class SplabApplication {
 
-    public static void main(String[] args) throws Exception {
-        Book myBook = new Book("My Book");
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(SplabApplication.class, args);
 
-        Section cap1 = new Section("Capitolul 1");
-        cap1.add(new Paragraph("Some text in cap 1"));
+        TransientComponent transientBean = context.getBean(TransientComponent.class);
+        transientBean.operation();
 
-        Section cap2 = new Section("Capitolul 2");
-        cap2.add(new Paragraph("Some text in cap 2"));
+        transientBean = context.getBean(TransientComponent.class);
+        transientBean.operation();
 
-        Section subcap2_1 = new Section("Subcapitolul 2.1");
-        cap2.add(subcap2_1); // Punem un subcapitol în capitolul 2
+        SingletonComponent singletonBean = context.getBean(SingletonComponent.class);
+        singletonBean.operation();
 
-        myBook.addContent(cap1);
-        myBook.addContent(cap2);
+        singletonBean = context.getBean(SingletonComponent.class);
+        singletonBean.operation();
 
-        // Generăm Cuprinsul
-        GenerateToC generateToC = new GenerateToC();
-        myBook.accept(generateToC);
+        ClientComponent c = context.getBean(ClientComponent.class);
+        c.operation();
 
-        // Luăm cuprinsul generat de vizitator
-        TableOfContents toc = generateToC.getToC();
-
-        // Îl afișăm pe ecran!
-        toc.print();
+        c = (ClientComponent) context.getBean("clientComponent");
+        c.operation();
     }
 }
