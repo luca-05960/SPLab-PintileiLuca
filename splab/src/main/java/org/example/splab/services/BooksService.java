@@ -1,39 +1,44 @@
 package org.example.splab.services;
 
 import org.example.splab.Book;
+import org.example.splab.persistence.BooksCrudRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.*;
+
+import java.util.Collection;
 
 @Service
 public class BooksService {
-    private final Map<Integer, Book> books = new HashMap<>();
+    private final BooksCrudRepository booksRepository;
+
+    @Autowired
+    public BooksService(BooksCrudRepository booksRepository) {
+        this.booksRepository = booksRepository;
+    }
 
     public Collection<Book> getAllBooks() {
-        return books.values();
+        return booksRepository.findAll();
     }
 
     public Book getBook(int id) {
-        return books.get(id);
+        return booksRepository.findById(id);
     }
 
     public Book addBook(Book book) {
-        int newId = books.size() + 1;
-        books.put(newId, book);
-        return book;
+        return booksRepository.save(book);
     }
 
     public Book updateBook(int id, Book book) {
-        if (books.containsKey(id)) {
-            books.put(id, book);
-            return book;
+        Book existing = booksRepository.findById(id);
+        if (existing != null) {
+            book.setId(id);
+            return booksRepository.save(book);
         }
         return null;
     }
 
     public String deleteBook(int id) {
-        if (books.remove(id) != null) {
-            return "Book " + id + " deleted successfully.";
-        }
-        return "Book not found.";
+        booksRepository.deleteById(id);
+        return "Book " + id + " deleted successfully.";
     }
 }

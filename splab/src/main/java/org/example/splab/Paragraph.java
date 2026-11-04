@@ -1,14 +1,31 @@
 package org.example.splab;
 
-public class Paragraph implements Element {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+
+@Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Paragraph extends BaseElement {
     private String text;
-    private AlignStrategy textAlignment; // Atributul pentru strategie
+
+    @Transient
+    private AlignStrategy textAlignment;
+
+    public Paragraph() {}
 
     public Paragraph(String text) {
         this.text = text;
     }
 
-    // Metoda cerută în main pentru a schimba strategia
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public void setAlignStrategy(AlignStrategy alignStrategy) {
         this.textAlignment = alignStrategy;
     }
@@ -16,10 +33,8 @@ public class Paragraph implements Element {
     @Override
     public void print() {
         if (textAlignment != null) {
-            // Dacă avem o strategie setată, o folosim pentru a printa textul
             textAlignment.render(text);
         } else {
-            // Comportamentul default dacă nu s-a setat nicio strategie
             System.out.println("Paragraph: " + text);
         }
     }

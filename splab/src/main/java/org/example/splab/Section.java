@@ -1,20 +1,46 @@
 package org.example.splab;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Section implements Element {
-    protected String title; // Protected pentru a putea fi accesat de clasa copil Book
+@Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Section extends BaseElement {
+    protected String title;
+
+    @OneToMany(targetEntity = BaseElement.class, cascade = CascadeType.ALL)
     protected List<Element> children = new ArrayList<>();
+
+    public Section() {}
 
     public Section(String title) {
         this.title = title;
     }
 
+    public String getTitle() {
+        return this.title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public List<Element> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Element> children) {
+        this.children = children;
+    }
+
     @Override
     public void print() {
         System.out.println(title);
-        // Iterează prin toți copiii și le apelează propria metodă print()
         for (Element child : children) {
             child.print();
         }
@@ -42,8 +68,4 @@ public class Section implements Element {
             child.accept(visitor);
         }
     }
-    public String getTitle() {
-        return this.title;
-    }
-
 }
