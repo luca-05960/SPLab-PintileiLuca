@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Books - SPLab Showcase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 860px;
+            margin: 30px auto;
+            padding: 0 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+        h1 { margin-bottom: 8px; }
+        h2 {
+            margin-top: 30px;
+            margin-bottom: 8px;
+            font-size: 1.15rem;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 4px;
+        }
+        a { color: #0066cc; text-decoration: underline; cursor: pointer; }
+        #sseDiv {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 50px;
+            max-height: 140px;
+            overflow-y: auto;
+            background: #fafafa;
+            margin-top: 8px;
+            font-family: monospace;
+        }
+        .form-row { margin-top: 8px; display: flex; gap: 8px; }
+        input[type="text"] { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; flex: 1; }
+        button { padding: 6px 14px; cursor: pointer; border-radius: 4px; border: 1px solid #999; background: #f0f0f0; }
+        button:hover { background: #e0e0e0; }
+        .chip {
+            font-size: 0.78rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            border: 1px solid #93c5fd;
+            background: #eff6ff;
+            color: #1d4ed8;
+            cursor: pointer;
+            margin-right: 4px;
+        }
+        .chip:hover { background: #dbeafe; }
+        .box { background: #f9f9f9; border: 1px solid #e0e0e0; padding: 12px; border-radius: 4px; margin-top: 8px; }
+        .box-sub { background: #ffffff; border: 1px dashed #d1d5db; padding: 8px 12px; border-radius: 4px; margin-top: 8px; }
+        ul { margin-left: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem; }
+        th, td { border: 1px solid #ddd; padding: 6px 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <!-- Lab 7 Task 1 Elements -->
+    <h1>All Books</h1>
+    <a href="javascript:void(0)" onclick="sendRequest()">Fetch Books</a>
+    <div id="sseDiv"></div>
+
+    <!-- 1. Test POST /books to trigger Observer SSE push -->
+    <h2>1. Create Book (POST /books & Observer Pattern)</h2>
+    <p style="font-size: 0.9rem; color: #555;">Enter a title to save a book. The Observer notifies the SSE listener and pushes the new ID above:</p>
+    <div class="form-row">
+        <input type="text" id="bookTitleInput" placeholder="Book title (or click a quick sample below)">
+        <button onclick="addBook()">Add Book</button>
+    </div>
+    <div style="margin-top: 6px; font-size: 0.85rem;">
+        <span style="color: #666;">Quick examples:</span>
+        <span class="chip" onclick="fillInput('Effective Java (3rd Edition)')">Effective Java</span>
+        <span class="chip" onclick="fillInput('Domain-Driven Design: Tackling Complexity')">Domain-Driven Design</span>
+        <span class="chip" onclick="fillInput('Head First Design Patterns')">Head First Design Patterns</span>
+        <span class="chip" onclick="fillInput('Patterns of Enterprise Application Architecture')">Enterprise Patterns</span>
+    </div>
+
+    <!-- 2. Database Books (Command Pattern & Spring Data JPA) -->
+    <h2>2. Saved Books in Database (Command Pattern & JPA)</h2>
+    <p style="font-size: 0.85rem; color: #666;">Persisted in H2 and retrieved via <code>GetAllBooksCommand</code>:</p>
+    <div id="booksList">Loading books...</div>
+
+    <!-- 3. Document Structure (Composite, Strategy, Proxy Patterns) -->
+    <h2>3. Document Hierarchy Examples (Composite, Strategy & Proxy Patterns)</h2>
+    
+    <!-- Example A: Design Patterns Book -->
+    <div class="box">
+        <strong>Example A — Technical Architecture Book:</strong><br>
+        <strong>Book:</strong> Design Patterns: Elements of Reusable Object-Oriented Software<br>
+        <strong>Authors:</strong> Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides
+        
+        <div class="box-sub">
+            <strong>Section 1: Chapter 1: Introduction</strong>
+            <ul>
+                <li style="text-align: left;"><em>Paragraph (AlignLeft Strategy):</em> "Designing object-oriented software is hard, and designing reusable software is even harder."</li>
+                <li style="text-align: center;"><em>Paragraph (AlignCenter Strategy):</em> "Patterns solve specific design problems and make OOP designs flexible and reusable."</li>
+                <li style="text-align: right;"><em>Paragraph (AlignRight Strategy):</em> "— Erich Gamma et al."</li>
+                <li><em>ImageProxy:</em> "gof-diagram.png" (Virtual proxy deferring heavy image load)</li>
+                <li><em>Table:</em> "Design Pattern Classification (Creational, Structural, Behavioral)"</li>
+            </ul>
+        </div>
+
+        <div class="box-sub">
+            <strong>Section 2: Chapter 2: Creational Patterns</strong>
+            <ul>
+                <li><em>Paragraph (AlignLeft Strategy):</em> "Abstract Factory, Builder, Factory Method, Prototype, Singleton."</li>
+                <li><em>ImageProxy:</em> "factory-method.png"</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Example B: Clean Code Book -->
+    <div class="box" style="margin-top: 12px;">
+        <strong>Example B — Software Craftsmanship Book:</strong><br>
+        <strong>Book:</strong> Clean Code: A Handbook of Agile Software Craftsmanship<br>
+        <strong>Author:</strong> Robert C. Martin (Uncle Bob)
+        
+        <div class="box-sub">
+            <strong>Section: Chapter 1: Clean Code Principles</strong>
+            <ul>
+                <li style="text-align: left;"><em>Paragraph (AlignLeft Strategy):</em> "Even bad code can function. But if code isn't clean, it can bring a development organization to its knees."</li>
+                <li style="text-align: left;"><em>Paragraph (AlignLeft Strategy):</em> "Always leave the campground cleaner than you found it (The Boy Scout Rule)."</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 4. Visitor Pattern -->
+    <h2>4. Document Operations Examples (Visitor Pattern)</h2>
+    <div class="box">
+        <strong>Example 1: BookStatistics Visitor (Computed over Example A):</strong>
+        <ul>
+            <li>Number of paragraphs: 4</li>
+            <li>Number of images / proxies: 2</li>
+            <li>Number of tables: 1</li>
+        </ul>
+
+        <strong style="display: block; margin-top: 10px;">Example 2: GenerateToC Visitor (Table of Contents with Virtual Page Offsets):</strong>
+        <pre style="background: #eee; padding: 8px 12px; margin-top: 4px; border-radius: 3px; font-size: 0.85rem; line-height: 1.5;">
+Chapter 1: Introduction ................................ Page 1
+  Section 1.1: What is a Design Pattern? .............. Page 2
+  Section 1.2: Describing Design Patterns ............. Page 4
+Chapter 2: Creational Patterns ......................... Page 7
+  Section 2.1: Factory Method & Abstract Factory ...... Page 8
+Chapter 3: Structural Patterns ......................... Page 12
+Chapter 4: Behavioral Patterns (Observer, Command) .... Page 18</pre>
+    </div>
+
+    <!-- 5. Spring Dependency Injection -->
+    <h2>5. Dependency Injection (Singleton & Transient Beans)</h2>
+    <div class="box" id="diBox">Loading DI status...</div>
+
+    <script>
+    // --- Exact Lab 7 Task 1 Script ---
+    function sendRequest() {
+        if(typeof(EventSource) !== "undefined") {
+            const source = new EventSource(`http://localhost:8080/books-sse`);
+            source.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                document.getElementById("sseDiv").innerHTML += data.id + "<br>";
+                loadBooks();
+            };
+        } else {
+            document.getElementById("sseDiv").innerHTML = "Your browser does not support server-sent events.";
+        }
+    }
+
+    // --- Helper: Fill Input from Quick Example Chips ---
+    function fillInput(title) {
+        document.getElementById("bookTitleInput").value = title;
+    }
+
+    // --- Helper: Add Book via POST /books ---
+    function addBook() {
+        const input = document.getElementById("bookTitleInput");
+        const title = input.value.trim();
+        if(!title) return;
+
+        fetch("http://localhost:8080/books", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title: title, authors: [] })
+        })
+        .then(res => res.json())
+        .then(() => {
+            input.value = "";
+            loadBooks();
+        });
+    }
+
+    // --- Helper: Fetch and display books via GET /books ---
+    function loadBooks() {
+        fetch("http://localhost:8080/books")
+        .then(res => res.json())
+        .then(books => {
+            if(!books || books.length === 0) {
+                document.getElementById("booksList").innerHTML = "<p style='color: #666;'>No books in database.</p>";
+                return;
+            }
+            let html = "<table><tr><th style='width: 50px;'>ID</th><th>Title</th><th>Authors</th><th style='width: 80px;'>Action</th></tr>";
+            books.forEach(b => {
+                const authorsStr = (b.authors && b.authors.length > 0)
+                    ? b.authors.map(a => `${a.name || ''} ${a.surname || ''}`.trim()).join(", ")
+                    : "—";
+                html += `<tr>
+                    <td><strong>#${b.id}</strong></td>
+                    <td>${b.title || 'Untitled'}</td>
+                    <td>${authorsStr}</td>
+                    <td><button onclick="deleteBook(${b.id})">Delete</button></td>
+                </tr>`;
+            });
+            html += "</table>";
+            document.getElementById("booksList").innerHTML = html;
+        })
+        .catch(() => {
+            document.getElementById("booksList").innerHTML = "<p>Ready. Start the server to load books.</p>";
+        });
+    }
+
+    // --- Helper: Delete Book via DELETE /books/{id} ---
+    function deleteBook(id) {
+        fetch(`http://localhost:8080/books/${id}`, { method: "DELETE" })
+        .then(() => loadBooks());
+    }
+
+    // --- Helper: Load DI status from /hello ---
+    function loadDi() {
+        fetch("http://localhost:8080/hello")
+        .then(res => res.text())
+        .then(txt => document.getElementById("diBox").innerHTML = txt)
+        .catch(() => document.getElementById("diBox").innerText = "Visit /hello to see DI output.");
+    }
+
+    window.onload = function() {
+        loadBooks();
+        loadDi();
+    };
+    </script>
+</body>
+</html>

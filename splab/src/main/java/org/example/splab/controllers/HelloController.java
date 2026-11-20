@@ -10,15 +10,15 @@ public class HelloController {
 
     private final ClientComponent clientComponent;
 
-    // Injectăm ClientComponent în controller[cite: 26]
+    // Injectăm ClientComponent în controller
     @Autowired
     public HelloController(ClientComponent clientComponent) {
         this.clientComponent = clientComponent;
     }
 
-    @GetMapping("/")
+    @GetMapping({"/hello", "/api/hello"})
     public String hello() {
-        // Returnăm mesajul cerut[cite: 26]
+        // Returnăm mesajul cerut
         return "Hello from Spring Boot <br> Hello from ClientComponent = " + clientComponent.toString();
     }
 }

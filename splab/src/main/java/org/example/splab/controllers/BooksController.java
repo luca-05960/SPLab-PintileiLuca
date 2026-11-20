@@ -2,6 +2,7 @@ package org.example.splab.controllers;
 
 import org.example.splab.Book;
 import org.example.splab.commands.*;
+import org.example.splab.observer.AllBooksSubject;
 import org.example.splab.persistence.BooksCrudRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +14,23 @@ import java.util.Collection;
 public class BooksController {
     private final BooksCrudRepository booksRepository;
     private final CommandContext commandContext;
+    private final AllBooksSubject allBooksSubject;
 
     @Autowired
-    public BooksController(BooksCrudRepository booksRepository, CommandContext commandContext) {
+    public BooksController(BooksCrudRepository booksRepository,
+                           CommandContext commandContext,
+                           @Autowired(required = false) AllBooksSubject allBooksSubject) {
         this.booksRepository = booksRepository;
         this.commandContext = commandContext != null ? commandContext : new CommandContext(booksRepository);
+        this.allBooksSubject = allBooksSubject;
+    }
+
+    public BooksController(BooksCrudRepository booksRepository, CommandContext commandContext) {
+        this(booksRepository, commandContext, null);
     }
 
     public BooksController(BooksCrudRepository booksRepository) {
-        this(booksRepository, new CommandContext(booksRepository));
+        this(booksRepository, new CommandContext(booksRepository), null);
     }
 
     @GetMapping
@@ -39,7 +48,15 @@ public class BooksController {
     @PostMapping
     public Book createBook(@RequestBody Book book) {
         CreateBookCommand command = new CreateBookCommand(commandContext, book);
-        return command.execute();
+        Book savedBook = command.execute();
+        if (allBooksSubject != null) {
+            allBooksSubject.add(savedBook);
+        }
+        return savedBook;
+    }
+
+    public Book newBook(Book book) {
+        return createBook(book);
     }
 
     @PutMapping("/{id}")
