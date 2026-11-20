@@ -2,6 +2,9 @@ package org.example.splab;
 
 import org.example.splab.commands.*;
 import org.example.splab.controllers.BooksController;
+import org.example.splab.controllers.BooksSseController;
+import org.example.splab.observer.AllBooksSubject;
+import org.example.splab.observer.Observer;
 import org.example.splab.persistence.AuthorsRepository;
 import org.example.splab.persistence.BooksCrudRepository;
 import org.example.splab.persistence.BooksRepository;
@@ -10,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
 
 @SpringBootTest
 class SplabApplicationTests {
@@ -31,6 +36,12 @@ class SplabApplicationTests {
     @Autowired
     private BooksController booksController;
 
+    @Autowired
+    private AllBooksSubject allBooksSubject;
+
+    @Autowired
+    private BooksSseController booksSseController;
+
     @Test
     void contextLoads() {
         Assertions.assertNotNull(booksRepository);
@@ -38,6 +49,8 @@ class SplabApplicationTests {
         Assertions.assertNotNull(booksCrudRepository);
         Assertions.assertNotNull(commandContext);
         Assertions.assertNotNull(booksController);
+        Assertions.assertNotNull(allBooksSubject);
+        Assertions.assertNotNull(booksSseController);
     }
 
     @Test
@@ -141,5 +154,30 @@ class SplabApplicationTests {
         // DELETE /books/{id}
         booksController.deleteBook(created.getId());
         Assertions.assertNull(booksController.getBookById(created.getId()));
+    }
+
+    @Test
+    void testObserverAndSseNotification() {
+        AtomicReference<Book> receivedBook = new AtomicReference<>();
+        Observer testObserver = new Observer() {
+            @Override
+            public void update(Book book) {
+                receivedBook.set(book);
+            }
+        };
+
+        allBooksSubject.attach(testObserver);
+
+        Book book = new Book("Observer Pattern in Spring");
+        Book created = booksController.createBook(book);
+
+        Assertions.assertNotNull(created);
+        Assertions.assertNotNull(receivedBook.get());
+        Assertions.assertEquals("Observer Pattern in Spring", receivedBook.get().getTitle());
+
+        allBooksSubject.detach(testObserver);
+
+        ResponseBodyEmitter emitter = booksSseController.getBooksSse();
+        Assertions.assertNotNull(emitter);
     }
 }
