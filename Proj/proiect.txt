@@ -1,0 +1,4 @@
+Garden Layout Planner
+Structura: Garden → Raised Bed / Parcela → Plant Batch → [Care Note, Plant Photo, Area (m²), Expected Yield (kg), Water Need (L/week)]
+
+Ce face: Calculeaza suprafata totala ocupata per parcela, necesarul saptamanal de apa pentru toata gradina, planificarea exacta a gradinii cu imagini si recolta estimata în kilograme.
